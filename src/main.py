@@ -1,6 +1,25 @@
 from voiceDriver import RecognizerAPI
+from firebaseAPI import FirebaseDB
+import sys
+import select
+import os
 def Start():
+
+    pathToFireBaseSDKKey = ""
+
+    while(True):
+
+        pathToFireBaseSDKKey = input("Please input path to Firebase SDK key:  ")
+
+        if (os.path.isfile(pathToFireBaseSDKKey) == False):
+            print(f'File {pathToFireBaseSDKKey} could not be found, please try again')
+            continue
+
+        break
+
+
     recog = RecognizerAPI()
+    firebaseDB = FirebaseDB(pathToFireBaseSDKKey, False)
 
     microphones = recog.GetAllDevices()
 
@@ -40,15 +59,20 @@ def Start():
 
         print("Please say something, or press 'S' to shutdown")
 
-        audio = recog.Listen(selectedMicrophoneIndex)
+        audio = recog.Listen(selectedMicrophoneIndex, 3)
 
         text = recog.SpeechToText(audio)
 
-        print(text)
+        firebaseDB.AddVisitor(text)
 
-        # if (input() == "S"):
-        #     print("Shutting down")
-        #     break
+        ready, _, _ = select.select([sys.stdin], [], [], 0.1)  # 0.1 is a short timeout
+        if ready:
+            user_input = sys.stdin.readline().strip()
+            if user_input == "S":
+                print("Shutting down")
+                break
+
+
 
 
 Start()

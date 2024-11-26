@@ -11,9 +11,14 @@ class RecognizerAPI:
     Blocks thread until set timeout is hit or speech stops after start of speech.
     Returns audio as variable, use SpeechToText to get it in text format
     '''
-    def Listen(self, microphoneIndex):
-        with sr.Microphone(device_index = microphoneIndex) as source:
-            return self.recogniser.listen(source)
+    def Listen(self, microphoneIndex, timeoutInSeconds):
+        try:
+
+            with sr.Microphone(device_index = microphoneIndex) as source:
+                return self.recogniser.listen(source, timeout=timeoutInSeconds)
+        except sr.WaitTimeoutError as e:
+            return
+        
         
 
     def SpeechToText(self, audio):
