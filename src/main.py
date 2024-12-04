@@ -1,5 +1,6 @@
 from voiceDriver import RecognizerAPI
 from firebaseAPI import FirebaseDB
+from gpiozero import Button
 import sys
 import select
 import os
@@ -8,6 +9,8 @@ import os
 recog = None
 firebaseDB = None
 selectedMicrophoneIndex = 0
+startFunction = None
+
 
 def InitDB():
     global recog
@@ -69,7 +72,7 @@ def SelectMicrophone():
             print("Selected microphone number was not from the list, please try again, or enter 'S' to shutdown")
 
 
-def Start():
+def StartKeyboard():
 
     
 
@@ -80,17 +83,24 @@ def Start():
         inputKey = input("Press R to start recording, or press 'S' to shutdown:  ")
 
         if (inputKey == "R"):
-            audio = recog.Listen(selectedMicrophoneIndex, 3)
-
+           StartRecording()
+       
             
+        if inputKey == "S":
+            print("Shutting down")
+            break
 
-            text = recog.SpeechToText(audio)
+def StartExternalSwitch():
 
-            if (text == ""):
-                print("Could not convert audio")
-                continue
+    button = Button(4)
+    button.when_pressed = StartRecording
+    while (True):
 
-            firebaseDB.AddVisitor(text)
+        
+
+        inputKey = input("Press 'S' to shutdown:  ")
+
+        
        
             
         if inputKey == "S":
@@ -98,7 +108,42 @@ def Start():
             break
 
 
+def StartRecording():
+    
+        audio = recog.Listen(selectedMicrophoneIndex, 3)
+
+        text = recog.SpeechToText(audio)
+
+        if (text == ""):
+            print("Could not convert audio")
+
+        firebaseDB.AddVisitor(text)
+
+def ConfigureInputMode():
+
+    global startFunction 
+
+    while (True):
+
+        print("1. Keyboard")
+        print("2. External switch")
+        inputKey = input("Please select input mode number: ")
+
+        if (inputKey == "1"):
+            startFunction = StartKeyboard
+            return
+
+        if (inputKey == "2"):
+            startFunction = StartExternalSwitch
+            return
+
+        print("Please input correct number")
+        
+        
+
+
 
 InitDB()
 SelectMicrophone()
-Start()
+ConfigureInputMode()
+startFunction()
