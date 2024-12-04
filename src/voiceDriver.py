@@ -27,7 +27,7 @@ class RecognizerAPI:
             return self.recogniser.recognize_google(audio)
         
         except Exception as e:
-            return "Could not understand"
+            return ""
     
     def GetAllDevices(self):
         deviceCount = self.pyaudio.get_device_count()

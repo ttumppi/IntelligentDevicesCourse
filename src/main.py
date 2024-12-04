@@ -57,20 +57,27 @@ def Start():
 
     while (True):
 
-        print("Please say something, or press 'S' to shutdown")
+        
 
-        audio = recog.Listen(selectedMicrophoneIndex, 3)
+        inputKey = input("Press R to start recording, or press 'S' to shutdown:  ")
 
-        text = recog.SpeechToText(audio)
+        if (inputKey == "R"):
+            audio = recog.Listen(selectedMicrophoneIndex, 3)
 
-        firebaseDB.AddVisitor(text)
+            
 
-        ready, _, _ = select.select([sys.stdin], [], [], 0.1)  # 0.1 is a short timeout
-        if ready:
-            user_input = sys.stdin.readline().strip()
-            if user_input == "S":
-                print("Shutting down")
-                break
+            text = recog.SpeechToText(audio)
+
+            if (text == ""):
+                print("Could not convert audio")
+                continue
+
+            firebaseDB.AddVisitor(text)
+       
+            
+        if inputKey == "S":
+            print("Shutting down")
+            break
 
 
 
