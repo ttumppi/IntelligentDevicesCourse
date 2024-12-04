@@ -3,7 +3,15 @@ from firebaseAPI import FirebaseDB
 import sys
 import select
 import os
-def Start():
+
+
+recog = None
+firebaseDB = None
+selectedMicrophoneIndex = 0
+
+def InitDB():
+    global recog
+    global firebaseDB
 
     pathToFireBaseSDKKey = ""
 
@@ -21,13 +29,18 @@ def Start():
     recog = RecognizerAPI()
     firebaseDB = FirebaseDB(pathToFireBaseSDKKey, False)
 
+
+def SelectMicrophone():
+
+    global selectedMicrophoneIndex
+
     microphones = recog.GetAllDevices()
 
     if (len(microphones) == 0):
         print("No microphones found, exiting")
         return
 
-    selectedMicrophoneIndex = 0
+    
 
 
     print("Please select microphone to use with the corresponding number:")
@@ -55,6 +68,11 @@ def Start():
         else:
             print("Selected microphone number was not from the list, please try again, or enter 'S' to shutdown")
 
+
+def Start():
+
+    
+
     while (True):
 
         
@@ -81,5 +99,6 @@ def Start():
 
 
 
-
+InitDB()
+SelectMicrophone()
 Start()
