@@ -1,6 +1,7 @@
 from voiceDriver import RecognizerAPI
 from firebaseAPI import FirebaseDB
 from gpiozero import Button
+from client import HttpClient
 import sys
 import select
 import os
@@ -10,27 +11,18 @@ recog = None
 firebaseDB = None
 selectedMicrophoneIndex = 0
 startFunction = None
+client = None
 
 
 def InitDB():
     global recog
-    global firebaseDB
+    global client
 
-    pathToFireBaseSDKKey = ""
-
-    while(True):
-
-        pathToFireBaseSDKKey = input("Please input path to Firebase SDK key:  ")
-
-        if (os.path.isfile(pathToFireBaseSDKKey) == False):
-            print(f'File {pathToFireBaseSDKKey} could not be found, please try again')
-            continue
-
-        break
+    
 
 
     recog = RecognizerAPI()
-    firebaseDB = FirebaseDB(pathToFireBaseSDKKey, False)
+    client = HttpClient("192.168.1.100", "8080", None)
 
 
 def SelectMicrophone():
@@ -109,6 +101,8 @@ def StartExternalSwitch():
 
 
 def StartRecording():
+        
+        global client
     
         audio = recog.Listen(selectedMicrophoneIndex, 3)
 
@@ -117,7 +111,7 @@ def StartRecording():
         if (text == ""):
             print("Could not convert audio")
 
-        firebaseDB.AddVisitor(text)
+        client.UploadMessage(text)
 
 def ConfigureInputMode():
 

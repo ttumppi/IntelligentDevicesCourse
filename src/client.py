@@ -49,7 +49,7 @@ class HttpClient:
 
     def UploadMessage(self, message):
         creds = self.EncryptCredentials()
-        someJson = {"message":"Test from python"}
+        someJson = {"message":message}
 
         jsonDump = json.dumps(someJson).encode("utf-8")
         POSTRequest = urllib.request.Request(f"http://{self.ip}:{self.port}/data", jsonDump, {"Content-Type": "application/json", "Authorization": creds}, None, None, "POST")
