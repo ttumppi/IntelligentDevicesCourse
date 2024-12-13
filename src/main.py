@@ -1,9 +1,15 @@
 from voiceDriver import RecognizerAPI
 from firebaseAPI import FirebaseDB
-from gpiozero import Button
+
 import sys
 import select
 import os
+import threading
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 recog = None
@@ -92,20 +98,21 @@ def StartKeyboard():
 
 def StartExternalSwitch():
 
-    button = Button(4)
-    button.when_pressed = StartRecording
+    t1 = threading.Thread(target=CheckButtonPress, args=(StartRecording,))
+    t1.start()
+
     while (True):
 
-        
+        inputKey = input("Press 'S' to shutdown:   ")
 
-        inputKey = input("Press 'S' to shutdown:  ")
-
-        
-       
-            
         if inputKey == "S":
             print("Shutting down")
             break
+
+def CheckButtonPress(callback):
+    while (True):
+        if (GPIO.input(16) == GPIO.HIGH) :
+            callback()
 
 
 def StartRecording():
