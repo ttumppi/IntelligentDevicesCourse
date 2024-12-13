@@ -82,6 +82,7 @@ def StartKeyboard():
             print("Shutting down")
             break
 
+
 def StartExternalSwitch():
 
     button = Button(4)

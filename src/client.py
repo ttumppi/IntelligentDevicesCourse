@@ -39,7 +39,8 @@ class HttpClient:
                 for item in jsonData:
                     self.callback(item["message"])
 
-                    DELETERequest = urllib.request.Request(f"http://{self.ip}:{self.port}/data/{item['id']}", None, {"Content-Type": "application/json", "Authorization": creds}, None, None, "DELETE")
+                    DELETERequest = urllib.request.Request(f"http://{self.ip}:{self.port}/data/{item['id']}", None,
+                                                            {"Content-Type": "application/json", "Authorization": creds}, None, None, "DELETE")
                     urllib.request.urlopen(DELETERequest)
             except Exception as e:
                 print(e)
