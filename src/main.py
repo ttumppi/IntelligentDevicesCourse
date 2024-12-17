@@ -19,12 +19,12 @@ startFunction = None
 
 
 def InitDB():
-    global recog
-    global firebaseDB
+    global recog #Global file variable for voice conversion and retrieval of microphone devices
+    global firebaseDB #Global file variable for interaction with Google Firebase Database
 
     pathToFireBaseSDKKey = ""
 
-    while(True):
+    while(True): # Loop until correct path to API file is entered by user
 
         pathToFireBaseSDKKey = input("Please input path to Firebase SDK key:  ")
 
@@ -35,17 +35,19 @@ def InitDB():
         break
 
 
-    recog = RecognizerAPI()
-    firebaseDB = FirebaseDB(pathToFireBaseSDKKey, False)
+    recog = RecognizerAPI() # Wrapper for AI library to convert audio
+    firebaseDB = FirebaseDB(pathToFireBaseSDKKey, False) # Wrapper to interact with Google Firebase database
+
+    
 
 
 def SelectMicrophone():
 
-    global selectedMicrophoneIndex
+    global selectedMicrophoneIndex # global variable for selected microphone index
 
     microphones = recog.GetAllDevices()
 
-    if (len(microphones) == 0):
+    if (len(microphones) == 0): # Exit if no microphone plugged in
         print("No microphones found, exiting")
         return
 
@@ -56,7 +58,7 @@ def SelectMicrophone():
 
     availableMicrophoneIndexes = []
     
-    while (True):
+    while (True): # loop through found microphones and display each with a selectable number
 
         for i in range(len(microphones)):
 
@@ -71,7 +73,7 @@ def SelectMicrophone():
         
         inputtedValue = int(inputtedValue)
 
-        if (availableMicrophoneIndexes.__contains__(inputtedValue)):
+        if (availableMicrophoneIndexes.__contains__(inputtedValue)): # If found microphone list contains user inputted number, use that as the recording microphone
             selectedMicrophoneIndex = inputtedValue
             break
         else:
@@ -117,14 +119,14 @@ def CheckButtonPress(callback):
 
 def StartRecording():
     
-        audio = recog.Listen(selectedMicrophoneIndex, 3)
+        audio = recog.Listen(selectedMicrophoneIndex, 3) # Start recording audio from microphone, function exits once speech has a pause
 
-        text = recog.SpeechToText(audio)
+        text = recog.SpeechToText(audio) # returns "" if can't convert audio, otherwise returns speech as text
 
         if (text == ""):
             print("Could not convert audio")
 
-        firebaseDB.AddVisitor(text)
+        firebaseDB.AddVisitor(text) # add text to Google firebase database
 
 def ConfigureInputMode():
 
